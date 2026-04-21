@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soarwave — Engineering · Intelligent Systems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy:      #0B1D35;
+      --cyan:      #0EA5E9;
+      --cyan-lt:   #38BDF8;
+      --white:     #FFFFFF;
+      --g50:       #F8FAFC;
+      --g100:      #F1F5F9;
+      --g200:      #E2E8F0;
+      --g400:      #94A3B8;
+      --g600:      #475569;
+      --g900:      #0F172A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #fff;
+      color: var(--navy);
+      overflow-x: hidden;
+    }
+
+    /* ── PROGRESS BAR ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; z-index: 200;
+      height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--cyan-lt));
+      transition: width .1s linear;
+      box-shadow: 0 0 8px rgba(14,165,233,.6);
+    }
+
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 2px; left: 0; right: 0; z-index: 100;
+      padding: 18px 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(11,29,53,.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(14,165,233,.08);
+      transition: all .3s ease;
+    }
+    nav.scrolled {
+      background: rgba(11,29,53,.97);
+      padding: 12px 64px;
+      border-bottom: 1px solid rgba(14,165,233,.15);
+    }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; }
+    .nav-logo svg { height: 38px; width: auto; }
+    .nav-links { display: flex; gap: 40px; list-style: none; }
+    .nav-links a {
+      color: rgba(255,255,255,.85); text-decoration: none;
+      font-size: 12px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+      transition: color .2s; padding: 6px 2px;
+      border-bottom: 2px solid transparent;
+    }
+    .nav-links a:hover { color: var(--cyan); border-bottom-color: rgba(14,165,233,.4); }
+    .nav-cta {
+      border: 1px solid var(--cyan) !important;
+      color: var(--cyan) !important;
+      padding: 7px 18px; border-radius: 5px;
+      transition: background .2s, color .2s !important;
+    }
+    .nav-cta:hover { background: var(--cyan) !important; color: var(--navy) !important; }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative; height: 100vh; min-height: 720px;
+      background: var(--navy);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    #radar-canvas {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      opacity: .18; pointer-events: none;
+    }
+    /* flowing gradient blobs */
+    .hero-blob {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      filter: blur(80px); opacity: .12;
+    }
+    .hero-blob-1 {
+      width: 600px; height: 600px;
+      background: var(--cyan);
+      top: -200px; right: -100px;
+      animation: blobDrift 12s ease-in-out infinite alternate;
+    }
+    .hero-blob-2 {
+      width: 400px; height: 400px;
+      background: #4F46E5;
+      bottom: -150px; left: -80px;
+      animation: blobDrift 16s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes blobDrift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(40px,30px) scale(1.1); }
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      text-align: center; max-width: 900px; padding: 0 40px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(14,165,233,.08);
+      border: 1px solid rgba(14,165,233,.25);
+      border-radius: 100px; padding: 7px 18px;
+      font-size: 11px; font-weight: 500; letter-spacing: 2.5px;
+      text-transform: uppercase; color: var(--cyan);
+      margin-bottom: 36px;
+    }
+    .badge-dot {
+      width: 6px; height: 6px; background: var(--cyan); border-radius: 50%;
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:.4; transform:scale(.7); }
+    }
+    .hero-title {
+      font-size: clamp(44px,7vw,82px);
+      font-weight: 200; color: #fff;
+      line-height: 1.08; letter-spacing: -1.5px;
+      margin-bottom: 24px;
+    }
+    .hero-title strong { font-weight: 800; color: var(--cyan); }
+    .hero-sub {
+      font-size: clamp(16px,1.8vw,19px); font-weight: 300;
+      color: rgba(255,255,255,.5); max-width: 640px;
+      margin: 0 auto 52px; line-height: 1.8;
+    }
+    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--cyan); color: var(--navy);
+      padding: 15px 34px; border-radius: 7px;
+      font-size: 14px; font-weight: 700; text-decoration: none;
+      letter-spacing: .4px; transition: all .2s; display: inline-block;
+    }
+    .btn-primary:hover {
+      background: var(--cyan-lt); transform: translateY(-2px);
+      box-shadow: 0 10px 36px rgba(14,165,233,.45);
+    }
+    .btn-ghost {
+      background: transparent; border: 1px solid rgba(255,255,255,.22);
+      color: rgba(255,255,255,.75);
+      padding: 15px 34px; border-radius: 7px;
+      font-size: 14px; font-weight: 400; text-decoration: none;
+      letter-spacing: .4px; transition: all .2s; display: inline-block;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,.6); color: #fff; }
+    .hero-scroll {
+      position: absolute; bottom: 44px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      color: rgba(255,255,255,.25); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    }
+    .scroll-bar {
+      width: 1px; height: 44px;
+      background: linear-gradient(to bottom, rgba(14,165,233,.7), transparent);
+      animation: scrollAnim 2s ease-in-out infinite;
+    }
+    @keyframes scrollAnim {
+      0%   { transform: scaleY(0); transform-origin: top; opacity:1; }
+      49%  { transform: scaleY(1); transform-origin: top; opacity:1; }
+      50%  { transform: scaleY(1); transform-origin: bottom; opacity:1; }
+      100% { transform: scaleY(0); transform-origin: bottom; opacity:0; }
+    }
+
+    /* ── SHARED ── */
+    section { padding: 110px 64px; }
+    .label {
+      font-size: 11px; font-weight: 600; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--cyan); margin-bottom: 14px;
+      display: block;
+    }
+    .h2 {
+      font-size: clamp(32px,4vw,54px); font-weight: 200;
+      line-height: 1.12; color: var(--navy); margin-bottom: 20px;
+    }
+    .h2 strong { font-weight: 800; }
+    .lead {
+      font-size: 17px; font-weight: 300; color: var(--g600);
+      line-height: 1.8; max-width: 600px;
+    }
+    .reveal {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+
+    /* ── MISSION ── */
+    #mission {
+      background: var(--g50);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 88px; align-items: center;
+    }
+    .mission-body p + p { margin-top: 20px; }
+    .stats-block {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1px; background: var(--g200);
+      border: 1px solid var(--g200); border-radius: 14px; overflow: hidden;
+    }
+    .stat {
+      background: #fff; padding: 36px 30px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .stat-n {
+      font-size: 44px; font-weight: 900; color: var(--navy); line-height: 1;
+    }
+    .stat-n em { color: var(--cyan); font-style: normal; }
+    .stat-l { font-size: 13px; font-weight: 400; color: var(--g400); }
+
+    /* ── PRODUCTS ── */
+    #products { background: #fff; }
+    #products .head { text-align: center; margin-bottom: 72px; }
+    #products .head .h2, #products .head .lead { margin-left: auto; margin-right: auto; }
+    .cards {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+    }
+    .card {
+      background: var(--g50); border: 1px solid var(--g200);
+      border-radius: 18px; padding: 48px 36px;
+      position: relative; overflow: hidden;
+      transition: transform .3s, box-shadow .3s, border-color .3s;
+    }
+    .card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--cyan), var(--cyan-lt));
+      transform: scaleX(0); transform-origin: left; transition: transform .4s;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 24px 64px rgba(11,29,53,.09); border-color: rgba(14,165,233,.25); }
+    .card:hover::after { transform: scaleX(1); }
+.card-bottom-img {
+      width: 100%; margin-top: 28px;
+      border-radius: 12px; overflow: hidden;
+    }
+    .card-bottom-img img {
+      width: 100%; height: auto; display: block;
+    }
+    .card-icon {
+      width: 56px; height: 56px;
+      background: rgba(14,165,233,.1); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px;
+    }
+    .card-icon svg { width: 28px; height: 28px; stroke: var(--cyan); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .card-tag { font-size: 11px; font-weight: 600; color: var(--cyan); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+    .card-name { font-size: 22px; font-weight: 800; color: var(--navy); letter-spacing: -.3px; margin-bottom: 16px; }
+    .card-desc { font-size: 15px; font-weight: 300; color: var(--g600); line-height: 1.78; margin-bottom: 28px; }
+    .feats { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+    .feats li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--g600); }
+    .feat-dot { width: 5px; height: 5px; background: var(--cyan); border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+
+    /* ── TECHNOLOGY ── */
+    #technology {
+      background: var(--navy); color: #fff;
+      position: relative; overflow: hidden;
+    }
+    #technology::before {
+      content: '';
+      position: absolute; top: -250px; right: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(14,165,233,.09) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #technology .h2 { color: #fff; }
+    #technology .lead { color: rgba(255,255,255,.5); }
+    .tech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 88px; align-items: center; margin-top: 72px; }
+    .pillars { display: flex; flex-direction: column; gap: 20px; }
+    .pillar {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
+      border-radius: 12px; padding: 26px 28px;
+      display: flex; gap: 20px; align-items: flex-start;
+      transition: background .3s, border-color .3s;
+    }
+    .pillar:hover { background: rgba(14,165,233,.06); border-color: rgba(14,165,233,.2); }
+    .pillar-n { font-size: 11px; font-weight: 700; color: var(--cyan); letter-spacing: 1px; min-width: 26px; padding-top: 3px; }
+    .pillar-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .pillar-desc { font-size: 14px; color: rgba(255,255,255,.42); line-height: 1.7; }
+    .tech-vis { display: flex; align-items: center; justify-content: center; }
+
+    /* ── TEAM ── */
+    #team { background: var(--g50); text-align: center; }
+    #team .head { margin-bottom: 72px; }
+    #team .head .h2, #team .head .lead { margin: 0 auto; }
+    #team .head .h2 { margin-bottom: 20px; }
+    .team-grid { display: grid; grid-template-columns: repeat(2,320px); gap: 28px; justify-content: center; }
+    .t-card {
+      background: #fff; border: 1px solid var(--g200);
+      border-radius: 18px; padding: 44px 32px; text-align: center;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .t-card:hover { transform: translateY(-5px); box-shadow: 0 24px 64px rgba(11,29,53,.09); }
+    .avatar {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--navy), var(--cyan));
+      margin: 0 auto 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -1px;
+      overflow: hidden;
+      border: 3px solid var(--g200);
+    }
+    .avatar img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center top;
+    }
+    .t-name { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+    .t-role { font-size: 11px; font-weight: 600; color: var(--cyan); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 18px; }
+    .t-bio { font-size: 14px; font-weight: 300; color: var(--g600); line-height: 1.75; }
+
+    /* ── AFFILIATIONS ── */
+    #affiliations { background: #fff; text-align: center; padding: 80px 64px; }
+    .affil-row { display: flex; align-items: center; justify-content: center; gap: 60px; flex-wrap: wrap; }
+    .affil {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      opacity: .45; transition: opacity .25s;
+    }
+    .affil:hover { opacity: 1; }
+    .affil-name { font-size: 20px; font-weight: 700; color: var(--navy); }
+    .affil-sub { font-size: 11px; color: var(--g400); letter-spacing: 1.5px; text-transform: uppercase; }
+
+    /* ── CONTACT ── */
+    #contact {
+      background: var(--navy);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 88px; align-items: start;
+    }
+    #contact .h2 { color: #fff; }
+    #contact .lead { color: rgba(255,255,255,.5); }
+    .contact-items { margin-top: 44px; display: flex; flex-direction: column; gap: 18px; }
+    .c-item { display: flex; gap: 14px; align-items: flex-start; }
+    .c-icon {
+      width: 38px; height: 38px; background: rgba(14,165,233,.1);
+      border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .c-icon svg { width: 16px; height: 16px; stroke: var(--cyan); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .c-text { font-size: 14px; color: rgba(255,255,255,.55); line-height: 1.7; }
+    .c-text strong { color: rgba(255,255,255,.85); font-weight: 500; }
+    .form-box {
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px; padding: 48px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .fg { margin-bottom: 18px; }
+    .fg label {
+      display: block; font-size: 11px; font-weight: 600;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      color: rgba(255,255,255,.4); margin-bottom: 8px;
+    }
+    .fg input, .fg select, .fg textarea {
+      width: 100%;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 9px; padding: 12px 15px;
+      font-size: 14px; color: #fff; font-family: inherit;
+      outline: none; transition: border-color .2s, background .2s;
+      appearance: none;
+    }
+    .fg input::placeholder, .fg textarea::placeholder { color: rgba(255,255,255,.25); }
+    .fg select { cursor: pointer; }
+    .fg select option { background: var(--navy); color: #fff; }
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      border-color: var(--cyan); background: rgba(14,165,233,.06);
+    }
+    .fg textarea { resize: vertical; min-height: 120px; }
+    .btn-submit {
+      width: 100%; background: var(--cyan); color: var(--navy);
+      border: none; border-radius: 9px; padding: 15px;
+      font-size: 14px; font-weight: 700; font-family: inherit;
+      cursor: pointer; transition: all .2s; margin-top: 4px; letter-spacing: .5px;
+    }
+    .btn-submit:hover {
+      background: var(--cyan-lt); transform: translateY(-1px);
+      box-shadow: 0 10px 36px rgba(14,165,233,.4);
+    }
+    /* form success */
+    .form-success {
+      display: none; flex-direction: column; align-items: center;
+      gap: 16px; padding: 60px 32px; text-align: center; color: #fff;
+    }
+    .form-success.show { display: flex; }
+    .succ-icon {
+      width: 64px; height: 64px; background: rgba(14,165,233,.12);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    }
+    .succ-icon svg { width: 30px; height: 30px; stroke: var(--cyan); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .succ-t { font-size: 22px; font-weight: 700; }
+    .succ-m { font-size: 15px; color: rgba(255,255,255,.5); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #060D1A; padding: 36px 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,.04);
+    }
+    footer svg { height: 26px; width: auto; }
+    .foot-copy { font-size: 12px; color: rgba(255,255,255,.18); }
+    .foot-links { display: flex; gap: 24px; }
+    .foot-links a { font-size: 12px; color: rgba(255,255,255,.22); text-decoration: none; transition: color .2s; }
+    .foot-links a:hover { color: var(--cyan); }
+
+    /* ── SCROLL OFFSET (fixed nav compensation) ── */
+    section { scroll-margin-top: 70px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      section { padding: 80px 28px; scroll-margin-top: 60px; }
+      nav { padding: 16px 24px; }
+      nav.scrolled { padding: 12px 24px; }
+      #section-dots { display: none; }
+      .nav-links { display: none; }
+      #mission { grid-template-columns: 1fr; gap: 52px; }
+      .cards { grid-template-columns: 1fr; }
+      .tech-grid { grid-template-columns: 1fr; gap: 52px; }
+      .tech-vis { display: none; }
+      .team-grid { grid-template-columns: 1fr; }
+      #contact { grid-template-columns: 1fr; gap: 52px; }
+      footer { flex-direction: column; gap: 20px; text-align: center; padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── SCROLL PROGRESS ── -->
+<div id="progress-bar"></div>
+
+
+<!-- ── NAVIGATION ── -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <svg viewBox="0 0 600 180" xmlns="http://www.w3.org/2000/svg">
+      <text x="48" y="106" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="100" font-size="72" letter-spacing="20" fill="#fff">SOAR</text>
+      <circle cx="312" cy="82" r="5.5" fill="#0EA5E9"/>
+      <text x="330" y="106" font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="72" letter-spacing="4" fill="#fff">WAVE</text>
+    </svg>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#mission">Mission</a></li>
+    <li><a href="#products">Products</a></li>
+    <li><a href="#technology">Technology</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="#contact" class="nav-cta">Contact Us</a></li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <canvas id="radar-canvas" width="900" height="900"></canvas>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Radar Intelligence &nbsp;·&nbsp; Agentic AI
+    </div>
+    <h1 class="hero-title">
+      Sensing the Invisible.<br><strong>Protecting the Essential.</strong>
+    </h1>
+    <p class="hero-sub">
+      Soarwave engineers intelligent RF systems that see through walls, monitor life patterns,
+      and autonomously manage the radio spectrum — powered by next-generation agentic AI.
+    </p>
+    <div class="hero-actions">
+      <a href="#products" class="btn-primary">Explore Our Technology</a>
+      <a href="#contact" class="btn-ghost">Partner With Us</a>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-bar"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ── MISSION ── -->
+<section id="mission">
+  <div class="mission-body reveal">
+    <span class="label">Our Mission</span>
+    <h2 class="h2">Engineering where<br><strong>AI meets the physical world</strong></h2>
+    <p class="lead">
+      At Soarwave, we engineer the intersection of artificial intelligence and electromagnetic sensing.
+      Our mission is to develop intelligent RF systems that redefine how we monitor, protect, and
+      understand the physical world — from elderly care homes to complex defense environments.
+    </p>
+    <p class="lead">
+      We believe the most important breakthroughs happen when cutting-edge signal processing meets
+      autonomous, self-learning AI agents — creating systems that don't just observe, but understand.
+    </p>
+  </div>
+  <div class="reveal">
+    <div class="stats-block">
+      <div class="stat">
+        <div class="stat-n">3<em>+</em></div>
+        <div class="stat-l">Core Technologies</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">1<em>st</em></div>
+        <div class="stat-l">Biometric Through-Wall ID</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">∞</div>
+        <div class="stat-l">Learning Capability</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n">0</div>
+        <div class="stat-l">Cameras Required</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PRODUCTS ── -->
+<section id="products">
+  <div class="head reveal">
+    <span class="label">What We Build</span>
+    <h2 class="h2">Three Pillars of<br><strong>Intelligent Sensing</strong></h2>
+    <p class="lead">
+      Our technology portfolio spans healthcare, security, and spectrum intelligence — unified by
+      a single core: autonomous RF agents that learn, adapt, and protect.
+    </p>
+  </div>
+
+  <div class="cards">
+
+    <!-- SOARCARE -->
+    <div class="card reveal">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        </svg>
+      </div>
+      <div class="card-tag">Elderly Care · AI Monitoring</div>
+      <h3 class="card-name">SOARCARE</h3>
+      <p class="card-desc">
+        A non-invasive care system powered by an agentic AI that continuously learns
+        each resident's unique behavioural patterns — detecting anomalies before they become emergencies.
+      </p>
+      <ul class="feats">
+        <li><span class="feat-dot"></span>Autonomous fall detection with instant alerts</li>
+        <li><span class="feat-dot"></span>Stroke and cardiac pattern recognition</li>
+        <li><span class="feat-dot"></span>Learns individual gait, sleep and daily rhythms</li>
+        <li><span class="feat-dot"></span>Zero cameras — full privacy preserved</li>
+        <li><span class="feat-dot"></span>Caregiver dashboard &amp; family notifications</li>
+      </ul>
+      <div class="card-bottom-img">
+        <img src="SOARCARE.png" alt="SOARCARE system">
+      </div>
+    </div>
+
+    <!-- Through-Wall Radar -->
+    <div class="card reveal">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304-.001a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12z"/>
+        </svg>
+      </div>
+      <div class="card-tag">Sensing · Biometrics · Defense</div>
+      <h3 class="card-name">Through-Wall Radar</h3>
+      <p class="card-desc">
+        Proprietary radar technology capable of identifying individuals through solid walls using
+        unique biometric signatures — without cameras, without contact, without compromise.
+      </p>
+      <ul class="feats">
+        <li><span class="feat-dot"></span>Gait-based biometric identification</li>
+        <li><span class="feat-dot"></span>Person detection through structural barriers</li>
+        <li><span class="feat-dot"></span>Applications in security &amp; search-and-rescue</li>
+        <li><span class="feat-dot"></span>Defense and tactical deployment ready</li>
+        <li><span class="feat-dot"></span>Passive, non-detectable operation mode</li>
+      </ul>
+      <div class="card-bottom-img">
+        <img src="TWR.png" alt="Through-Wall Radar system">
+      </div>
+    </div>
+
+    <!-- Agentic AI for RF -->
+    <div class="card reveal">
+      <div class="card-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z"/>
+        </svg>
+      </div>
+      <div class="card-tag">RF Intelligence · Spectrum AI</div>
+      <h3 class="card-name">Agentic AI for RF</h3>
+      <p class="card-desc">
+        Autonomous AI agents designed for complex radio frequency environments — managing spectrum,
+        detecting interference, and executing intelligent signal strategies in real time.
+      </p>
+      <ul class="feats">
+        <li><span class="feat-dot"></span>Autonomous spectrum management</li>
+        <li><span class="feat-dot"></span>Real-time interference detection &amp; mitigation</li>
+        <li><span class="feat-dot"></span>Signal intelligence and classification</li>
+        <li><span class="feat-dot"></span>Self-adapting agents for dynamic RF environments</li>
+        <li><span class="feat-dot"></span>Cognitive radio and spectrum sensing</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── TECHNOLOGY ── -->
+<section id="technology">
+  <div class="reveal">
+    <span class="label">Under the Hood</span>
+    <h2 class="h2">Built on the frontier of<br><strong>RF &amp; Artificial Intelligence</strong></h2>
+    <p class="lead">
+      Our technology stack combines deep RF engineering expertise with state-of-the-art machine learning —
+      creating systems that are not just smart, but genuinely autonomous.
+    </p>
+  </div>
+
+  <div class="tech-grid">
+    <div class="pillars">
+      <div class="pillar reveal">
+        <span class="pillar-n">01</span>
+        <div>
+          <div class="pillar-title">FMCW Radar</div>
+          <div class="pillar-desc">Frequency-Modulated Continuous-Wave radar provides high-resolution range and velocity sensing — the physical foundation enabling through-wall detection and non-contact vital-sign monitoring.</div>
+        </div>
+      </div>
+      <div class="pillar reveal">
+        <span class="pillar-n">02</span>
+        <div>
+          <div class="pillar-title">Agentic Machine Learning</div>
+          <div class="pillar-desc">Purpose-built AI agents that operate autonomously in real-world RF environments — learning, adapting, and deciding without human intervention.</div>
+        </div>
+      </div>
+      <div class="pillar reveal">
+        <span class="pillar-n">03</span>
+        <div>
+          <div class="pillar-title">Biometric Signal Processing</div>
+          <div class="pillar-desc">Novel algorithms that extract unique human biometric signatures from reflected RF waves, enabling non-contact identification and health monitoring.</div>
+        </div>
+      </div>
+      <div class="pillar reveal">
+        <span class="pillar-n">04</span>
+        <div>
+          <div class="pillar-title">Cognitive Spectrum Engine</div>
+          <div class="pillar-desc">Intelligent spectrum sensing and management that understands RF context, optimizing usage and detecting anomalies in real time.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-vis reveal">
+      <canvas id="tech-canvas" width="420" height="420"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ── TEAM ── -->
+<section id="team">
+  <div class="head reveal">
+    <span class="label">The Founders</span>
+    <h2 class="h2">The people behind<br><strong>Soarwave</strong></h2>
+    <p class="lead">A focused founding team with deep expertise in RF engineering, signal processing, and artificial intelligence — driven by the mission to build technology that genuinely matters.</p>
+  </div>
+
+  <div class="team-grid">
+    <div class="t-card reveal">
+      <div class="avatar"><img src="AndreRouco.jpeg" alt="André Rouco"></div>
+      <div class="t-name">André Rouco</div>
+      <div class="t-role">Co-Founder</div>
+      <p class="t-bio">RF engineer and AI researcher specialising in through-wall radar systems and biometric signal processing. Developer of the proprietary FMCW-based gait identification technology and lead architect of Soarwave's intelligent sensing platform.</p>
+    </div>
+    <div class="t-card reveal">
+      <div class="avatar"><img src="BeatrizSoares.jpeg" alt="Beatriz Soares"></div>
+      <div class="t-name">Beatriz Soares</div>
+      <div class="t-role">Co-Founder</div>
+      <p class="t-bio">RF engineer specialising in electromagnetic propagation models, channel characterisation, and vital signal acquisition. Drives Soarwave's research into physiological sensing and propagation-aware system design for non-contact health monitoring.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── AFFILIATIONS ── -->
+<section id="affiliations">
+  <p class="label reveal" style="text-align:center;">Academic Affiliation</p>
+  <div class="affil-row">
+    <div class="affil reveal">
+      <svg viewBox="0 0 280 82" xmlns="http://www.w3.org/2000/svg" style="height:60px;width:auto;">
+        <!-- Wave 1 — outermost -->
+        <path d="M4,70 C5,52 12,30 25,15 C29,10 34,12 32,18 C22,32 16,54 20,68 Z" fill="#111"/>
+        <!-- Wave 2 — middle -->
+        <path d="M19,68 C21,50 29,28 42,13 C46,8 51,10 49,16 C39,30 33,52 37,66 Z" fill="#111"/>
+        <!-- Wave 3 — innermost -->
+        <path d="M36,66 C38,50 44,32 54,20 C57,16 60,18 58,23 C52,35 48,56 50,66 Z" fill="#111"/>
+        <!-- AALBORG -->
+        <text x="72" y="36" font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="18" letter-spacing="3" fill="#111">AALBORG</text>
+        <!-- UNIVERSITET -->
+        <text x="72" y="62" font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="18" letter-spacing="3" fill="#111">UNIVERSITET</text>
+      </svg>
+      <div class="affil-sub">Denmark · Research Partner</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="reveal">
+    <span class="label">Get In Touch</span>
+    <h2 class="h2">Let's build the<br><strong>future together</strong></h2>
+    <p class="lead">
+      Whether you're an investor, potential partner, or research collaborator — we want to hear
+      from you. Soarwave is actively seeking strategic partnerships and funding to accelerate
+      our technology to market.
+    </p>
+    <div class="contact-items">
+      <div class="c-item">
+        <div class="c-icon">
+          <svg viewBox="0 0 24 24"><path d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+        </div>
+        <div class="c-text">
+          <strong>soarwave@soar-wave.com</strong><br>
+          <span style="font-size:12px;opacity:.6">General inquiries &amp; partnerships</span>
+        </div>
+      </div>
+      <div class="c-item">
+        <div class="c-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+        </div>
+        <div class="c-text">
+          <strong>Lisboa, Portugal</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-box reveal">
+    <form id="contactForm">
+      <div class="form-row">
+        <div class="fg">
+          <label>First Name</label>
+          <input type="text" name="first_name" placeholder="John" required>
+        </div>
+        <div class="fg">
+          <label>Last Name</label>
+          <input type="text" name="last_name" placeholder="Doe" required>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="john@company.com" required>
+      </div>
+      <div class="fg">
+        <label>I'm reaching out as</label>
+        <select name="role">
+          <option value="">Select a role…</option>
+          <option>Investor / VC</option>
+          <option>Potential Customer</option>
+          <option>Research Partner</option>
+          <option>Defence / Government</option>
+          <option>Healthcare Organisation</option>
+          <option>Media / Press</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Message</label>
+        <textarea name="message" placeholder="Tell us about your interest in Soarwave, your organisation, or what you'd like to explore together…"></textarea>
+      </div>
+      <button type="submit" class="btn-submit">Send Message →</button>
+    </form>
+    <div class="form-success" id="formSuccess">
+      <div class="succ-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div class="succ-t">Message Received</div>
+      <div class="succ-m">Thank you for reaching out. We'll get back to you within 48 hours.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <svg viewBox="0 0 600 180" xmlns="http://www.w3.org/2000/svg">
+    <text x="48" y="106" font-family="'Helvetica Neue',Arial,sans-serif" font-weight="100" font-size="72" letter-spacing="20" fill="rgba(255,255,255,.35)">SOAR</text>
+    <circle cx="312" cy="82" r="5.5" fill="#0EA5E9"/>
+    <text x="330" y="106" font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="72" letter-spacing="4" fill="rgba(255,255,255,.35)">WAVE</text>
+  </svg>
+  <span class="foot-copy">© 2025 Soarwave. All rights reserved.</span>
+  <div class="foot-links">
+    <a href="#mission">Mission</a>
+    <a href="#products">Products</a>
+    <a href="#team">Team</a>
+    <a href="#contact">Contact</a>
+  </div>
+</footer>
+
+<script>
+/* ── NAV scroll ── */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+/* ── PROGRESS BAR ── */
+const progressBar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  progressBar.style.width = Math.min(pct, 100) + '%';
+});
+
+
+/* ── SMOOTH SCROLL for all anchor links ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+
+/* ── RADAR canvas ── */
+(function() {
+  const c = document.getElementById('radar-canvas');
+  const ctx = c.getContext('2d');
+  const W = 900, H = 900, cx = 450, cy = 450;
+  const rings = [70,140,210,280,350,420];
+  let angle = 0;
+  const blips = [
+    { x: cx+130, y: cy-100, ph: 0 },
+    { x: cx-190, y: cy+60,  ph: 1.2 },
+    { x: cx+220, y: cy+160, ph: 2.1 },
+    { x: cx-80,  y: cy-220, ph: 0.7 },
+  ];
+
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+
+    /* rings */
+    rings.forEach(r => {
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.strokeStyle='rgba(14,165,233,.7)'; ctx.lineWidth=.6; ctx.stroke();
+    });
+
+    /* cross-hairs */
+    [[0,Math.PI/2],[Math.PI/4,Math.PI*3/4]].forEach(([a,b]) => {
+      [a,b].forEach(θ => {
+        ctx.beginPath(); ctx.moveTo(cx,cy);
+        ctx.lineTo(cx+Math.cos(θ)*440, cy+Math.sin(θ)*440);
+        ctx.strokeStyle='rgba(14,165,233,.3)'; ctx.lineWidth=.5; ctx.stroke();
+      });
+    });
+
+    /* sweep trail */
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
+    for(let i=0;i<80;i++){
+      const a = -i*(Math.PI/180)*1.2;
+      const alpha = ((80-i)/80)*0.22;
+      ctx.beginPath(); ctx.moveTo(0,0);
+      ctx.arc(0,0,440,a-.015,a+.015); ctx.closePath();
+      ctx.fillStyle=`rgba(14,165,233,${alpha})`; ctx.fill();
+    }
+    /* sweep arm */
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(440,0);
+    ctx.strokeStyle='rgba(14,165,233,.9)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.restore();
+
+    /* blips */
+    const t = Date.now()/1000;
+    blips.forEach(b => {
+      const a = .25 + .55*Math.abs(Math.sin(t+b.ph));
+      ctx.beginPath(); ctx.arc(b.x,b.y,3,0,Math.PI*2);
+      ctx.fillStyle=`rgba(14,165,233,${a})`; ctx.fill();
+      ctx.beginPath(); ctx.arc(b.x,b.y,9,0,Math.PI*2);
+      ctx.fillStyle=`rgba(14,165,233,${a*.12})`; ctx.fill();
+    });
+
+    angle += .012;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── TECH node graph canvas ── */
+(function() {
+  const c = document.getElementById('tech-canvas');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  const nodes = Array.from({length:16}, () => ({
+    x: 30+Math.random()*360, y: 30+Math.random()*360,
+    vx: (Math.random()-.5)*.4, vy: (Math.random()-.5)*.4,
+    r: 2+Math.random()*3
+  }));
+
+  function draw() {
+    ctx.clearRect(0,0,420,420);
+    nodes.forEach((a,i) => {
+      nodes.slice(i+1).forEach(b => {
+        const d = Math.hypot(a.x-b.x, a.y-b.y);
+        if(d<130){
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+          ctx.strokeStyle=`rgba(14,165,233,${(1-d/130)*.35})`;
+          ctx.lineWidth=.8; ctx.stroke();
+        }
+      });
+    });
+    nodes.forEach(n => {
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(14,165,233,.75)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(n.x,n.y,n.r+5,0,Math.PI*2);
+      ctx.fillStyle='rgba(14,165,233,.08)'; ctx.fill();
+      n.x+=n.vx; n.y+=n.vy;
+      if(n.x<15||n.x>405) n.vx*=-1;
+      if(n.y<15||n.y>405) n.vy*=-1;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── Scroll reveal ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if(e.isIntersecting){
+      setTimeout(() => e.target.classList.add('in'), i * 70);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: .1, rootMargin: '0px 0px -50px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ── Contact form → Formspree ── */
+document.getElementById('contactForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const form = e.target;
+  const btn = form.querySelector('.btn-submit');
+  btn.textContent = 'Sending…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('https://formspree.io/f/xbdqappo', {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    });
+    if (res.ok) {
+      form.style.display = 'none';
+      document.getElementById('formSuccess').classList.add('show');
+      setTimeout(() => location.reload(), 5000);
+    } else {
+      btn.textContent = 'Error — please try again';
+      btn.disabled = false;
+    }
+  } catch {
+    btn.textContent = 'Error — please try again';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
