@@ -222,7 +222,8 @@
     #products .head { text-align: center; margin-bottom: 72px; }
     #products .head .h2, #products .head .lead { margin-left: auto; margin-right: auto; }
     .cards {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+      display: grid; grid-template-columns: repeat(2,1fr); gap: 24px;
+      max-width: 1040px; margin: 0 auto;
     }
     .card {
       background: var(--g50); border: 1px solid var(--g200);
@@ -357,6 +358,37 @@
       .news-body { padding: 36px 28px; }
     }
 
+    .news-card + .news-card { margin-top: 28px; }
+    .news-card .news-photo-placeholder img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
+
+    /* ── PLATFORM (real screenshots, Oct 2026) ── */
+    #platform { background: var(--g50); }
+    #platform .head { text-align: center; margin-bottom: 64px; }
+    #platform .head .h2, #platform .head .lead { margin-left: auto; margin-right: auto; }
+    .plat-home {
+      display: grid; grid-template-columns: 1fr 220px; gap: 32px; align-items: end;
+      max-width: 1040px; margin: 0 auto 32px;
+    }
+    .plat-grid {
+      display: grid; grid-template-columns: repeat(2,1fr); gap: 32px;
+      max-width: 1040px; margin: 0 auto;
+    }
+    .shot {
+      background: #fff; border: 1px solid var(--g200); border-radius: 14px; overflow: hidden;
+      box-shadow: 0 18px 48px rgba(11,29,53,.08);
+    }
+    .shot img { display: block; width: 100%; height: auto; }
+    .shot.fixed { aspect-ratio: 16 / 9; }
+    .shot.fixed img { height: 100%; object-fit: cover; object-position: top left; }
+    .phone-shot { display: block; width: 100%; height: auto; filter: drop-shadow(0 18px 30px rgba(11,29,53,.25)); }
+    .shot-cap { margin-top: 14px; font-size: 14px; color: var(--g600); line-height: 1.6; }
+    .shot-cap b { display: block; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cyan); margin-bottom: 4px; }
+    .plat-note { max-width: 1040px; margin: 36px auto 0; text-align: center; font-size: 13px; color: var(--g400); }
+    @media (max-width: 860px) {
+      .plat-home, .plat-grid { grid-template-columns: 1fr; }
+      .plat-home .phone-wrap { max-width: 240px; margin: 0 auto; }
+    }
+
     /* ── AFFILIATIONS ── */
     #affiliations { background: #fff; text-align: center; padding: 80px 64px; }
     .affil-row { display: flex; align-items: center; justify-content: center; gap: 60px; flex-wrap: wrap; }
@@ -458,6 +490,7 @@
       .nav-links { display: none; }
       #mission { grid-template-columns: 1fr; gap: 52px; }
       .cards { grid-template-columns: 1fr; }
+      .news-body { padding: 32px 24px; }
       .tech-grid { grid-template-columns: 1fr; gap: 52px; }
       .tech-vis { display: none; }
       .team-grid { grid-template-columns: 1fr; }
@@ -484,6 +517,7 @@
   <ul class="nav-links">
     <li><a href="#mission">Mission</a></li>
     <li><a href="#products">Products</a></li>
+    <li><a href="#platform">Platform</a></li>
     <li><a href="#technology">Technology</a></li>
     <li><a href="#team">Team</a></li>
     <li><a href="#news">News</a></li>
@@ -506,8 +540,8 @@
       Sensing the Invisible.<br><strong>Protecting the Essential.</strong>
     </h1>
     <p class="hero-sub">
-      Soarwave engineers intelligent RF systems that see through walls, monitor life patterns,
-      and autonomously manage the radio spectrum — powered by next-generation agentic AI.
+      Soarwave builds radar and agentic AI that understand the physical world. First, SOARCARE:
+      it tells carers and families when an older person needs help, with no cameras and nothing to wear.
     </p>
     <div class="hero-actions">
       <a href="#products" class="btn-primary">Explore Our Technology</a>
@@ -529,7 +563,7 @@
     <p class="lead">
       At Soarwave, we engineer the intersection of artificial intelligence and electromagnetic sensing.
       Our mission is to develop intelligent RF systems that redefine how we monitor, protect, and
-      understand the physical world — from elderly care homes to complex defense environments.
+      understand the physical world, from a care-home bedroom to the radio spectrum itself.
     </p>
     <p class="lead">
       We believe the most important breakthroughs happen when cutting-edge signal processing meets
@@ -543,8 +577,8 @@
         <div class="stat-l">Core Technologies</div>
       </div>
       <div class="stat">
-        <div class="stat-n">1<em>st</em></div>
-        <div class="stat-l">Biometric Through-Wall ID</div>
+        <div class="stat-n">Top<em> 50</em></div>
+        <div class="stat-l">Startup World Cup Portugal 2026</div>
       </div>
       <div class="stat">
         <div class="stat-n">∞</div>
@@ -562,10 +596,10 @@
 <section id="products">
   <div class="head reveal">
     <span class="label">What We Build</span>
-    <h2 class="h2">Three Pillars of<br><strong>Intelligent Sensing</strong></h2>
+    <h2 class="h2">Two Pillars of<br><strong>Intelligent Sensing</strong></h2>
     <p class="lead">
-      Our technology portfolio spans healthcare, security, and spectrum intelligence — unified by
-      a single core: autonomous RF agents that learn, adapt, and protect.
+      Our technology spans eldercare and spectrum intelligence, built on one core: autonomous RF
+      agents that learn, adapt, and protect.
     </p>
   </div>
 
@@ -581,45 +615,21 @@
       <div class="card-tag">Elderly Care · AI Monitoring</div>
       <h3 class="card-name">SOARCARE</h3>
       <p class="card-desc">
-        A non-invasive care system powered by an agentic AI that continuously learns
-        each resident's unique behavioural patterns — detecting anomalies before they become emergencies.
+        Radar, sound and an agentic AI that learns each person's routine, at home or in a care
+        home, and calls for help only when something is really wrong.
       </p>
       <ul class="feats">
-        <li><span class="feat-dot"></span>Autonomous fall detection with instant alerts</li>
-        <li><span class="feat-dot"></span>Stroke and cardiac pattern recognition</li>
-        <li><span class="feat-dot"></span>Learns individual gait, sleep and daily rhythms</li>
-        <li><span class="feat-dot"></span>Zero cameras — full privacy preserved</li>
-        <li><span class="feat-dot"></span>Caregiver dashboard &amp; family notifications</li>
+        <li><span class="feat-dot"></span>Fall warnings: a voice companion asks first, then calls the family</li>
+        <li><span class="feat-dot"></span>Notices no movement at the usual time, and unusual breathing</li>
+        <li><span class="feat-dot"></span>Learns each person's daily rhythm</li>
+        <li><span class="feat-dot"></span>No cameras, nothing to wear</li>
+        <li><span class="feat-dot"></span>Apps for families, carers and municipalities</li>
       </ul>
       <div class="card-bottom-img">
         <img src="SOARCARE.png" alt="SOARCARE system">
       </div>
     </div>
 
-    <!-- Through-Wall Radar -->
-    <div class="card reveal">
-      <div class="card-icon">
-        <svg viewBox="0 0 24 24">
-          <path d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304-.001a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12z"/>
-        </svg>
-      </div>
-      <div class="card-tag">Sensing · Biometrics · Defense</div>
-      <h3 class="card-name">Through-Wall Radar</h3>
-      <p class="card-desc">
-        Proprietary radar technology capable of identifying individuals through solid walls using
-        unique biometric signatures — without cameras, without contact, without compromise.
-      </p>
-      <ul class="feats">
-        <li><span class="feat-dot"></span>Gait-based biometric identification</li>
-        <li><span class="feat-dot"></span>Person detection through structural barriers</li>
-        <li><span class="feat-dot"></span>Applications in security &amp; search-and-rescue</li>
-        <li><span class="feat-dot"></span>Defense and tactical deployment ready</li>
-        <li><span class="feat-dot"></span>Passive, non-detectable operation mode</li>
-      </ul>
-      <div class="card-bottom-img">
-        <img src="TWR.png" alt="Through-Wall Radar system">
-      </div>
-    </div>
 
     <!-- Agentic AI for RF -->
     <div class="card reveal">
@@ -648,6 +658,50 @@
   </div>
 </section>
 
+<!-- ── PLATFORM ── -->
+<section id="platform">
+  <div class="head reveal">
+    <span class="label">Built and Running</span>
+    <h2 class="h2">The SOARCARE platform,<br><strong>working today</strong></h2>
+    <p class="lead">
+      One platform for everyone who looks after an older person: a voice companion at home, the
+      family's phone, the carers' tablet and a map for the parish. It runs on site, on NVIDIA edge
+      hardware, and nothing in it is a camera.
+    </p>
+  </div>
+
+  <div class="plat-home reveal">
+    <div>
+      <div class="shot"><img src="img/companion.jpg" alt="The SOARCARE voice companion's home screen" loading="lazy"></div>
+      <div class="shot-cap"><b>Voice companion, at home</b>Talk, music, a book. After a possible fall it asks "Are you all right?" first, and listens.</div>
+    </div>
+    <div class="phone-wrap">
+      <img class="phone-shot" src="img/family-phone.png" alt="The family app on a phone" loading="lazy">
+      <div class="shot-cap"><b>Family app</b>Rings only when help is needed.</div>
+    </div>
+  </div>
+
+  <div class="plat-grid reveal">
+    <div>
+      <div class="shot fixed"><img src="img/carer-tablet.jpg" alt="The carers' tablet" loading="lazy"></div>
+      <div class="shot-cap"><b>Carers' tablet</b>Quiet until a room needs someone, then it says which room, out loud.</div>
+    </div>
+    <div>
+      <div class="shot fixed"><img src="img/care-home-floor.jpg" alt="A care home floor with every room and sensor" loading="lazy"></div>
+      <div class="shot-cap"><b>Care home floor</b>People per room and every sensor's state, at a glance.</div>
+    </div>
+    <div>
+      <div class="shot fixed"><img src="img/network-map.jpg" alt="Map of the homes in a parish" loading="lazy"></div>
+      <div class="shot-cap"><b>Parish or municipality</b>Every home on one map, showing warnings only.</div>
+    </div>
+    <div>
+      <div class="shot fixed"><img src="img/radar-raw-data.jpg" alt="Raw radar frames shown as a 3D point cloud" loading="lazy"></div>
+      <div class="shot-cap"><b>Radar, under the hood</b>A radar frame is a handful of 3D points, never a picture.</div>
+    </div>
+  </div>
+  <p class="plat-note">Screens from the platform as it runs today, on simulated sensor data. Real radars come next.</p>
+</section>
+
 <!-- ── TECHNOLOGY ── -->
 <section id="technology">
   <div class="reveal">
@@ -665,7 +719,7 @@
         <span class="pillar-n">01</span>
         <div>
           <div class="pillar-title">FMCW Radar</div>
-          <div class="pillar-desc">Frequency-Modulated Continuous-Wave radar provides high-resolution range and velocity sensing — the physical foundation enabling through-wall detection and non-contact vital-sign monitoring.</div>
+          <div class="pillar-desc">Frequency-Modulated Continuous-Wave radar provides high-resolution range and velocity sensing — the physical foundation for presence, fall and non-contact vital-sign sensing.</div>
         </div>
       </div>
       <div class="pillar reveal">
@@ -678,8 +732,8 @@
       <div class="pillar reveal">
         <span class="pillar-n">03</span>
         <div>
-          <div class="pillar-title">Biometric Signal Processing</div>
-          <div class="pillar-desc">Novel algorithms that extract unique human biometric signatures from reflected RF waves, enabling non-contact identification and health monitoring.</div>
+          <div class="pillar-title">Vital-Sign Signal Processing</div>
+          <div class="pillar-desc">Algorithms that read breathing and movement from reflected RF waves, for non-contact health monitoring.</div>
         </div>
       </div>
       <div class="pillar reveal">
@@ -710,7 +764,7 @@
       <div class="avatar"><img src="AndreRouco.jpeg" alt="André Rouco"></div>
       <div class="t-name">André Rouco</div>
       <div class="t-role">Co-Founder</div>
-      <p class="t-bio">RF engineer and AI researcher specialising in through-wall radar systems and biometric signal processing. Developer of the proprietary FMCW-based gait identification technology and lead architect of Soarwave's intelligent sensing platform.</p>
+      <p class="t-bio">RF engineer and AI researcher specialising in radar sensing and agentic AI. Lead architect of Soarwave's intelligent sensing platform and of the SOARCARE software.</p>
     </div>
     <div class="t-card reveal">
       <div class="avatar"><img src="BeatrizSoares.jpeg" alt="Beatriz Soares"></div>
@@ -727,6 +781,30 @@
     <span class="label">Newsroom</span>
     <h2 class="h2">Latest from<br><strong>Soarwave</strong></h2>
     <p class="lead">Milestones, recognition, and updates from the road.</p>
+  </div>
+
+  <div class="news-card reveal">
+    <div class="news-photo-placeholder">
+      <img src="img/stage-web-summit.jpg" alt="The SOARCARE demo for Web Summit: a village and four live apps" loading="lazy">
+    </div>
+    <div class="news-body">
+      <div class="news-badge">
+        <span class="badge-dot" style="animation:none;"></span>
+        Coming up
+      </div>
+      <h3 class="news-title">SOARCARE live at Web Summit Lisbon 2026</h3>
+      <div class="news-meta">Lisbon, Portugal &nbsp;·&nbsp; 9&ndash;12 November 2026 &nbsp;·&nbsp; Altice MEO stand</div>
+      <div class="news-text">
+        <p>
+          We are showing SOARCARE live at the Altice MEO stand: a living village on one screen, with
+          our real apps beside it.
+        </p>
+        <p>
+          In three minutes, visitors see a fall at home reach the family's phone, the parish and a
+          care home. No camera anywhere. Come and see it.
+        </p>
+      </div>
+    </div>
   </div>
 
   <div class="news-card reveal">
